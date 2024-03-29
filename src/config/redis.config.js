@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 
 const redisConfig = {
   host: process.env.REDIS_HOST || undefined,

@@ -1,17 +1,20 @@
+const querystring = require('querystring');
+const fetch = require('node-fetch');
+
 const fetchData = async (url, options = {}) => {
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
       console.error(`HTTP error! Status: ${response.status}`);
     }
-    const contentType = response.headers.get("Content-Type");
-    if (contentType && contentType.includes("application/json")) {
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
       return await response.json();
     } else {
       return await response.text();
     }
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
   }
 };
 
@@ -19,7 +22,7 @@ const getFetch =
   (url) =>
   (data = {}) =>
   async (headers = {}) => {
-    const queryParams = new URLSearchParams(data).toString();
+    const queryParams = querystring.stringify(data);
     const apiUrl = queryParams ? `${url}?${queryParams}` : url;
     return await fetchData(apiUrl, { headers });
   };
@@ -32,15 +35,15 @@ const postFetch =
 
     if (data instanceof FormData) {
       options = {
-        method: "POST",
+        method: 'POST',
         body: data,
         headers: headers,
       };
     } else {
       options = {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...headers,
         },
         body: JSON.stringify(data),
