@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ChallengeEvent {
+  id                    Int      @id
+  name                  String
+  deadline_time         String?
+  average_entry_score   Int?
+  finished              Boolean
+  highest_score         Int?
+  highest_scoring_entry Int?
+  is_previous           Boolean?
+  is_current            Boolean?
+  is_next               Boolean?
+  most_selected         Int?
+  most_transferred_in   Int?
+  most_captained        Int?
+  most_vice_captained   Int?
+}
+
+model ChallengeEntryInfo {
+  entry               Int       @id
+  entry_name          String?
+  player_name         String?
+  region              String?
+  started_event       Int?
+  overall_points      Int?
+  overall_rank        Int?
+  bank                Int?
+  team_value          Int?
+  total_transfers     Int?
+  last_entry_name     String?
+  last_overall_points Int?
+  last_overall_rank   Int?
+  last_team_value     Int?
+  used_entry_name     String?
+  create_time         DateTime?
+  update_time         DateTime?
+}
+
+model ChallengeEntryLeagueInfo {
+  id              Int            @id @default(autoincrement())
+  entry           Int
+  league_id       Int
+  type            LeagueType
+  league_type     LeagueTypeEnum
+  league_name     String?
+  entry_rank      Int?
+  entry_last_rank Int?
+  start_event     Int?
+  created         String?
+  update_time     DateTime?
+
+  @@unique([entry, league_id, league_type], name: "entry_league_id_league_type_unique")
+}
+
+enum LeagueType {
+  public
+  private
+}
+
+enum LeagueTypeEnum {
+  Classic
+  H2h
+}
+
+model ChallengeEntryEventResult {
+  id                    Int       @id @default(autoincrement())
+  event                 Int
+  entry                 Int
+  event_points          Int?
+  event_transfers       Int?
+  event_transfers_cost  Int?
+  event_net_points      Int?
+  event_bench_points    Int?
+  event_auto_sub_points Int?
+  event_rank            Int?
+  event_chip            String?
+  played_captain        Int?
+  captain_points        Int?
+  event_picks           String?
+  event_auto_subs       String?
+  overall_points        Int?
+  overall_rank          Int?
+  team_value            Int?
+  bank                  Int?
+  update_time           DateTime?
+
+  @@unique([event, entry], name: "event_entry_unique")
+}
+
+model ChallengeEntryEventPick {
+  id             Int       @id @default(autoincrement())
+  event          Int
+  entry          Int
+  transfers      Int?
+  transfers_cost Int?
+  chip           String?
+  picks          String?
+  update_time    DateTime?
+
+  @@unique([event, entry], name: "challenge_entry_event_pick_entry_event_unique")
+}
+
+model ChallengeEntryEventTransfers {
+  id                 Int      @id @default(autoincrement())
+  event              Int
+  entry              Int
+  element_in         Int?
+  element_in_cost    Int?
+  element_in_played  Boolean?
+  element_in_points  Int?     @default(0)
+  element_out        Int?
+  element_out_cost   Int?
+  element_out_points Int?     @default(0)
+  time               String?
+
+  @@unique([element_in, element_out, time, event, entry], name: "event_transfers_unique")
+}
+
+model ChallengeLeagueEventReport {
+  id                     Int       @id @default(autoincrement())
+  league_id              Int
+  league_type            String
+  league_name            String
+  entry                  Int
+  entry_name             String?
+  player_name            String?
+  overall_points         Int?
+  overall_rank           Int?
+  team_value             Int?
+  bank                   Int?
+  event                  Int
+  event_points           Int?
+  event_transfers        Int?
+  event_transfers_cost   Int?
+  event_net_points       Int?
+  event_bench_points     Int?
+  event_auto_sub_points  Int?
+  event_rank             Int?
+  event_chip             String?
+  position1              Int?
+  position2              Int?
+  position3              Int?
+  position4              Int?
+  position5              Int?
+  position6              Int?
+  position7              Int?
+  position8              Int?
+  position9              Int?
+  position10             Int?
+  position11             Int?
+  position12             Int?
+  position13             Int?
+  position14             Int?
+  position15             Int?
+  captain                Int?
+  captain_points         Int?
+  captain_blank          Boolean?
+  captain_selected       String?
+  vice_captain           Int?
+  vice_captain_points    Int?
+  vice_captain_blank     Boolean?
+  vice_captain_selected  String?
+  played_captain         Int?
+  highest_score          Int?
+  highest_score_points   Int?
+  highest_score_blank    Boolean?
+  highest_score_selected String?
+  update_time            DateTime?
+
+  @@unique([league_id, league_type, entry, event], name: "league_entry_event_unique")
+}

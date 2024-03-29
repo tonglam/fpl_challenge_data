@@ -2,6 +2,15 @@
 
 Fpl-challenge-data fetches data from the Fantasy Challenge Premier League servers, cleans and transforms the data, and then stores it in MySQL and Redis.
 
+# Tech Stack
+
+- Node.js
+- Express.js
+- Eslint && Prettier
+- Vitest
+- Prisma
+- Pino
+
 # Fantansy Challenge Endpoints
 
 - Bootstrap-static: https://fplchallenge.premierleague.com/api/bootstrap-static/
