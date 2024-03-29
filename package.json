@@ -1,0 +1,21 @@
+{
+  "name": "fpl_challenge_data",
+  "version": "0.0.1",
+  "description": "Fpl-challenge-data fetches data from the Fantasy Challenge Premier League servers, cleans and transforms the data, and then stores it in MySQL and Redis.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Node.js",
+    "Express.js",
+    "FPL",
+    "FPL-Challenge"
+  ],
+  "author": "Tong Lam",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}
