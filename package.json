@@ -4,7 +4,8 @@
   "description": "Fpl-challenge-data fetches data from the Fantasy Challenge Premier League servers, cleans and transforms the data, and then stores it in MySQL and Redis.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node index.js",
+    "startdev": "nodemon index.js",
     "test": "vitest",
     "lint": "eslint . index.js src --cache --fix",
     "format": "prettier --write . index.js src"
