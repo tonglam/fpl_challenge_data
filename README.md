@@ -6,10 +6,10 @@ Fpl-challenge-data fetches data from the Fantasy Challenge Premier League server
 
 - Node.js
 - Express.js
-- Eslint && Prettier
 - Vitest
 - Prisma
 - Pino
+- Eslint && Prettier
 
 # Fantansy Challenge Endpoints
 
