@@ -4,6 +4,7 @@ require('dotenv/config');
 const { PrismaClient } = require('@prisma/client');
 const pino = require('pino');
 const expressPinoLogger = require('pino-http');
+const testJob = require('./src/jobs/test_job');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,9 @@ const prisma = new PrismaClient();
 // Logger
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
+// Cron job
+testJob();
+
 // Import the router
 const programmingLanguagesRouter = require('./src/routes/programmingLanguages.route');
 
@@ -21,16 +25,9 @@ const programmingLanguagesRouter = require('./src/routes/programmingLanguages.ro
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(expressPinoLogger({ logger }));
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.error(err);
-
-  if (err.code === 'P2002') {
-    res.status(400).json({
-      error: 'Duplicate entry. User with the same email already exists.',
-    });
-  } else {
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 // Routes
