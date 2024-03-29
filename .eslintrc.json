@@ -12,6 +12,7 @@
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
+    "node/no-extraneous-require": "warning",
     "node/no-unsupported-features/es-syntax": [
       "error",
       {

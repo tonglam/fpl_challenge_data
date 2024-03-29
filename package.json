@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "startdev": "nodemon index.js",
+    "dev": "nodemon index.js",
     "test": "vitest",
     "lint": "eslint . index.js src --cache --fix",
     "format": "prettier --write . index.js src"
