@@ -1,6 +1,6 @@
 # Overall
 
-Fpl-challenge-data fetches data from the Fantasy Challenge Premier League servers, cleans and transforms the data, and then stores it in MySQL and Redis.
+Fpl-challenge-data fetches data from the Fantasy Challenge Premier League servers, cleans and transforms the data, and then stores it in MongoDB and Redis.
 
 # Tech Stack
 
@@ -8,6 +8,7 @@ Fpl-challenge-data fetches data from the Fantasy Challenge Premier League server
 - Express.js
 - Jest
 - Prisma
+- MongoDB
 - Pino
 - Node-cron
 - Node-fetch

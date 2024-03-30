@@ -8,6 +8,7 @@
     "dev": "nodemon index.js",
     "test": "jest",
     "coverage": "jest --coverage",
+    "seed": "node prisma/seed.js",
     "lint": "eslint . index.js src --cache --fix",
     "format": "prettier --write . index.js src"
   },

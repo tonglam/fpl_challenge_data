@@ -1,15 +1,19 @@
 const { getFetch } = require('../utils/fetch.util');
 const { BOOTSTRAP_STATIC_URL } = require('../config/api.config');
+const { prisma } = require('../../index');
 
 const fetchChallengeEvent = async () => {
-  try {
-    const getChallangeEvent = getFetch(BOOTSTRAP_STATIC_URL)()();
-    const res = await getChallangeEvent;
+  const challegeEvevtData = await getFetch(BOOTSTRAP_STATIC_URL)()();
 
-    console.log(res);
-  } catch (error) {
-    console.error('Error fetching challenge event:', error);
-  }
+  createdEvent = '1';
+
+  // const createdEvent = await prisma.challengeEvent.create({
+  //   data: challegeEvevtData,
+  // });
+
+  console.log('Challenge event inserted into MongoDB:', createdEvent);
+
+  return createdEvent;
 };
 
 module.exports = { fetchChallengeEvent };

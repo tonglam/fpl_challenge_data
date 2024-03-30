@@ -4,7 +4,7 @@ require('dotenv/config');
 const { PrismaClient } = require('@prisma/client');
 const pino = require('pino');
 const expressPinoLogger = require('pino-http');
-const testJob = require('./src/jobs/test_job');
+// const testJob = require('./src/jobs/test.job');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,10 +16,9 @@ const prisma = new PrismaClient();
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 // Cron job
-testJob();
+// testJob();
 
 // Import the router
-const programmingLanguagesRouter = require('./src/routes/programmingLanguages.route');
 
 // Middleware
 app.use(express.json());
@@ -36,12 +35,97 @@ app.get('/', (req, res) => {
   res.json({ message: 'ok' });
 });
 
-app.get('/event', async (req, res) => {
-  const events = await prisma.event.findMany();
-  res.json(events);
+app.post('/products', async (req, res, next) => {
+  console.log(req.body, '************'); //Take a look into request object here
+  try {
+    const newProduct = await prisma.products.create({
+      data: { sellerId: 1, ...req.body },
+    });
+
+    res.json({ newProduct });
+  } catch (error) {
+    next(error.message);
+  }
 });
 
-app.use('/programming-languages', programmingLanguagesRouter);
+app.post('/products', async (req, res, next) => {
+  console.log(req.body, '************'); //Take a look into request object here
+  try {
+    const newProduct = await prisma.products.create({
+      data: { sellerId: 1, ...req.body },
+    });
+
+    res.json({ newProduct });
+  } catch (error) {
+    next(error.message);
+  }
+});
+
+app.get('/products/:id', async (req, res, next) => {
+  try {
+    const singleProduct = await prisma.products.findUnique({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.json({ singleProduct });
+  } catch (error) {
+    next(error.message);
+  }
+});
+
+app.patch('/products/:id', async (req, res, next) => {
+  try {
+    const product = await prisma.products.update({
+      where: {
+        id: req.params.id,
+      },
+      data: req.body,
+    });
+
+    res.json({ product });
+  } catch (error) {
+    next(error.message);
+  }
+});
+
+app.delete('/products/:id', async (req, res, next) => {
+  try {
+    await prisma.products.delete({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    next(error.message);
+  }
+});
+
+app.get('/users/:id/products', async (req, res, next) => {
+  try {
+    const usersWithProducts = await prisma.user.findUnique({
+      where: {
+        id: req.params.id,
+      },
+      include: {
+        products: {
+          where: {
+            selling: true,
+          },
+        },
+      },
+    });
+
+    const products = usersWithProducts?.products;
+
+    res.json({ products });
+  } catch (error) {
+    next(error.message);
+  }
+});
 
 // Start the server
 app.listen(port, '0.0.0.0', () => {
