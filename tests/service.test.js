@@ -1,9 +1,14 @@
-const { fetchChallengeEvent } = require('../src/services/challegeEvent');
+const { fetchEvent } = require('../src/services/bootStrapService');
+const { server } = require('../index');
 
-describe('fetchChallengeEvent', () => {
-  test('fetches challenge event data and logs it (assuming successful API call)', async () => {
-    const res = await fetchChallengeEvent();
+describe('fetchEvent', () => {
+  test('fetches event data', async () => {
+    const res = await fetchEvent();
 
     console.log('res:', res);
   });
+});
+
+afterAll((done) => {
+  server.close(done);
 });

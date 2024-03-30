@@ -10,53 +10,51 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL")
+  url      = env("CHALLENGE_DATABASE_URL")
 }
 
-// model challengeEvent {
-//   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
-//   name                  String
-//   deadline_time         String?
-//   release_time          String?
-//   average_entry_score   Int?
-//   finished              Boolean
-//   data_checked          Boolean
-//   highest_score         Int?
-//   highest_scoring_entry Int?
-//   is_previous           Boolean?
-//   is_current            Boolean?
-//   is_next               Boolean?
-//   release               Boolean?
-//   most_selected         Int?
-//   most_transferred_in   Int?
-//   most_captained        Int?
-//   most_vice_captained   Int?
+model Event {
+  id                        String    @id @default(auto()) @map("_id") @db.ObjectId
+  event_id                  Int       @unique @map("event_id")
+  name                      String
+  deadline_time             DateTime
+  release_time              DateTime?
+  average_entry_score       Int?
+  finished                  Boolean?
+  data_checked              Boolean?
+  highest_scoring_entry     Int?
+  deadline_time_epoch       BigInt?
+  deadline_time_game_offset Int?
+  highest_score             Int?
+  is_previous               Boolean?
+  is_current                Boolean?
+  is_next                   Boolean?
+  cup_leagues_created       Boolean?
+  h2h_ko_matches_created    Boolean?
+  can_enter                 Boolean?
+  can_manage                Boolean?
+  released                  Boolean?
+  ranked_count              Int?
+  chip_plays                String[]  @default([])
+  most_selected             Int?
+  most_transferred_in       Int?
+  top_element               Int?
+  top_element_info          Json?
+  transfers_made            Int?
+  most_captained            Int?
+  most_vice_captained       Int?
+  update_at                 DateTime  @updatedAt
 
-//   @@map("challenge_event")
-// }
-
-model User {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  email    String     @unique
-  name     String?
-  role     Role       @default(User)
-  products Products[]
+  @@map("event")
 }
 
-model Products {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  imageURL  String
-  selling   Boolean  @default(false)
-  seller    User     @relation(fields: [sellerId], references: [id])
-  sellerId  String   @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+model Phase {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  phase_id    Int      @unique @map("phase_id")
+  name        String?
+  start_event Int?
+  stop_event  Int?
+  update_at   DateTime @updatedAt
 
-enum Role {
-  User
-  Admin
-  Buyer
-  Seller
+  @@map("phase")
 }
