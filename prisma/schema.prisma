@@ -15,7 +15,7 @@ datasource db {
 
 model Event {
   id                        String    @id @default(auto()) @map("_id") @db.ObjectId
-  event_id                  Int       @unique @map("event_id")
+  event_id                  Int       @unique
   name                      String
   deadline_time             DateTime
   release_time              DateTime?
@@ -43,6 +43,7 @@ model Event {
   transfers_made            Int?
   most_captained            Int?
   most_vice_captained       Int?
+  created_at                DateTime  @default(now())
   update_at                 DateTime  @updatedAt
 
   @@map("event")
@@ -50,11 +51,125 @@ model Event {
 
 model Phase {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id    Int      @unique @map("phase_id")
-  name        String?
-  start_event Int?
-  stop_event  Int?
+  phase_id    Int      @unique
+  name        String   @default("")
+  start_event Int      @default(0)
+  stop_event  Int      @default(0)
+  created_at  DateTime @default(now())
   update_at   DateTime @updatedAt
 
   @@map("phase")
+}
+
+model Team {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  team_id    Int      @unique
+  team_code  Int
+  name       String?
+  short_name String?
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+  Player     Player[]
+
+  @@map("team")
+}
+
+model Player {
+  id                                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  element_id                           Int       @unique
+  can_transact                         Boolean?
+  chance_of_playing_next_round         Int?
+  chance_of_playing_this_round         Int?
+  code                                 Int
+  cost_change_event                    Int?
+  cost_change_event_fall               Int?
+  cost_change_start                    Int?
+  cost_change_start_fall               Int?
+  dreamteam_count                      Int?
+  element_type                         Int       @default(0)
+  ep_next                              String?
+  ep_this                              String?
+  event_points                         Int?
+  first_name                           String?
+  form                                 String?
+  in_dreamteam                         Boolean?
+  news                                 String?
+  news_added                           DateTime?
+  now_cost                             Int?
+  photo                                String?
+  points_per_game                      String?
+  second_name                          String?
+  selected_by_percent                  Int?
+  special                              Boolean?
+  squad_number                         Int?
+  status                               String?
+  team                                 Team      @relation(fields: [team_id], references: [team_id])
+  team_id                              Int
+  team_code                            Int
+  total_points                         Int?
+  transfers_in                         Int?
+  transfers_in_event                   Int?
+  transfers_out                        Int?
+  transfers_out_event                  Int?
+  value_form                           String?
+  value_season                         String?
+  web_name                             String    @default("")
+  minutes                              Int?
+  goals_scored                         Int?
+  assists                              Int?
+  clean_sheets                         Int?
+  goals_conceded                       Int?
+  own_goals                            Int?
+  penalties_saved                      Int?
+  penalties_missed                     Int?
+  yellow_cards                         Int?
+  red_cards                            Int?
+  saves                                Int?
+  bonus                                Int?
+  bps                                  Int?
+  influence                            String?
+  creativity                           String?
+  threat                               String?
+  ict_index                            String?
+  starts                               Int?
+  expected_goals                       String?
+  expected_assists                     String?
+  expected_goal_involvements           String?
+  expected_goals_conceded              String?
+  influence_rank                       Int?
+  influence_rank_type                  Int?
+  creativity_rank                      Int?
+  creativity_rank_type                 Int?
+  threat_rank                          Int?
+  threat_rank_type                     Int?
+  ict_index_rank                       Int?
+  ict_index_rank_type                  Int?
+  corners_and_indirect_freekicks_order Int?
+  corners_and_indirect_freekicks_text  String?
+  direct_freekicks_order               Int?
+  direct_freekicks_text                String?
+  penalties_order                      Int?
+  penalties_text                       String?
+  expected_goals_per_90                Int?
+  saves_per_90                         Int?
+  expected_assists_per_90              Int?
+  expected_goal_involvements_per_90    Int?
+  expected_goals_conceded_per_90       Int?
+  goals_conceded_per_90                Int?
+  now_cost_rank                        Int?
+  now_cost_rank_type                   Int?
+  form_rank                            Int?
+  form_rank_type                       Int?
+  points_per_game_rank                 Int?
+  points_per_game_rank_type            Int?
+  selected_rank                        Int?
+  selected_rank_type                   Int?
+  starts_per_90                        Int?
+  clean_sheets_per_90                  Int?
+  created_at                           DateTime  @default(now())
+  update_at                            DateTime  @updatedAt
+
+  @@index([element_type], name: "element_type_1")
+  @@index([team_id], name: "team_id_1")
+  @@map("player")
 }

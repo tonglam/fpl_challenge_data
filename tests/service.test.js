@@ -1,13 +1,11 @@
-const { fetchEvent } = require('../src/services/bootStrapService');
+const { fetchBootStrap } = require('../src/services/bootStrapService');
 const { server } = require('../index');
 
 describe('fetchEvent', () => {
   test('fetches event data', async () => {
-    const res = await fetchEvent();
-
-    console.log('res:', res);
+    await fetchBootStrap();
   });
-});
+}, 30000);
 
 afterAll((done) => {
   server.close(done);
