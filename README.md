@@ -6,7 +6,7 @@ Fpl-challenge-data fetches data from the Fantasy Challenge Premier League server
 
 - Node.js
 - Express.js
-- Vitest
+- Jest
 - Prisma
 - Pino
 - Node-cron

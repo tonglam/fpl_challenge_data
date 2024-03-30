@@ -1,4 +1,4 @@
-const { getFetch } = require('../utils/fetch');
+const { getFetch } = require('../utils/fetch.util');
 const { BOOTSTRAP_STATIC_URL } = require('../config/api.config');
 
 const fetchChallengeEvent = async () => {
@@ -12,4 +12,4 @@ const fetchChallengeEvent = async () => {
   }
 };
 
-module.exports = fetchChallengeEvent;
+module.exports = { fetchChallengeEvent };
