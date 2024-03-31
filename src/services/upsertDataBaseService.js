@@ -1,34 +1,4 @@
-const { getFetch } = require('../utils/fetch.util');
-const { BOOTSTRAP_STATIC_URL } = require('../config/api.config');
 const { prisma } = require('../../index');
-
-const fetchBootStrap = async () => {
-  const bootStrapData = await getFetch(BOOTSTRAP_STATIC_URL)()();
-
-  try {
-    await upsertEvents(bootStrapData);
-  } catch (error) {
-    console.error('Error upserting events:', error);
-  }
-
-  try {
-    await upsertPhase(bootStrapData);
-  } catch (error) {
-    console.error('Error upserting phase:', error);
-  }
-
-  try {
-    await upsertTeams(bootStrapData);
-  } catch (error) {
-    console.error('Error upserting teams:', error);
-  }
-
-  try {
-    await upsertPlayers(bootStrapData);
-  } catch (error) {
-    console.error('Error upserting players:', error);
-  }
-};
 
 const upsertEvents = async (bootStrapData) => {
   const eventData = bootStrapData.events.map((data) => {
@@ -124,4 +94,22 @@ const upsertPlayers = async (bootStrapData) => {
   }
 };
 
-module.exports = { fetchBootStrap, upsertEvents, upsertPhase, upsertTeams, upsertPlayers };
+const upsertEventFixture = async (fixtureData) => {
+  try {
+    await prisma.fixture.upsert({
+      where: { fixture_id: fixtureData.fixture_id },
+      update: fixtureData,
+      create: fixtureData,
+    });
+  } catch (error) {
+    console.error(`Error upserting event fixture with id ${fixtureData.fixture_id}:`, error);
+  }
+};
+
+module.exports = {
+  upsertEvents,
+  upsertPhase,
+  upsertTeams,
+  upsertPlayers,
+  upsertEventFixture,
+};

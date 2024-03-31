@@ -15,7 +15,7 @@ datasource db {
 
 model Event {
   id                        String    @id @default(auto()) @map("_id") @db.ObjectId
-  event_id                  Int       @unique
+  event_id                  Int
   name                      String
   deadline_time             DateTime
   release_time              DateTime?
@@ -35,7 +35,7 @@ model Event {
   can_manage                Boolean?
   released                  Boolean?
   ranked_count              Int?
-  chip_plays                String[]  @default([])
+  chip_plays                String[]
   most_selected             Int?
   most_transferred_in       Int?
   top_element               Int?
@@ -44,53 +44,91 @@ model Event {
   most_captained            Int?
   most_vice_captained       Int?
   created_at                DateTime  @default(now())
-  update_at                 DateTime  @updatedAt
 
+  playerStats         PlayerStats[]
+  playerValue         PlayerValue[]
+  event_fixtures      EventFixture[]
+  eventLive           EventLive?
+  entryEventPicks     EntryEventPicks[]
+  entryEventTransfers EntryEventTransfers[]
+
+  @@unique([event_id], name: "unique_event_id")
   @@map("event")
 }
 
 model Phase {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id    Int      @unique
-  name        String   @default("")
-  start_event Int      @default(0)
-  stop_event  Int      @default(0)
+  phase_id    Int
+  name        String?
+  start_event Int?
+  stop_event  Int?
   created_at  DateTime @default(now())
-  update_at   DateTime @updatedAt
 
+  @@unique([phase_id], name: "unique_phase_id")
   @@map("phase")
 }
 
 model Team {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  team_id    Int      @unique
+  team_id    Int
   team_code  Int
   name       String?
   short_name String?
   created_at DateTime @default(now())
-  update_at  DateTime @updatedAt
-  Player     Player[]
 
+  eventFixtureTeamA EventFixture[] @relation("TeamA")
+  eventFixtureTeamH EventFixture[] @relation("TeamH")
+  player            Player[]
+  playerStats       PlayerStats[]
+
+  @@unique([team_id], name: "unique_team_id")
+  @@unique([team_code], name: "unique_team_code")
   @@map("team")
 }
 
 model Player {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  element_id   Int
+  element_code Int
+  price        Int?
+  start_price  Int?
+  element_type Int
+  first_name   String?
+  second_name  String?
+  web_name     String
+  team         Team     @relation(fields: [team_id], references: [team_id])
+  team_id      Int
+  created_at   DateTime @default(now())
+
+  eventLive   EventLive[]
+  playerStats PlayerStats[]
+  playerValue PlayerValue[]
+
+  @@unique([element_id], name: "unique_element_id")
+  @@unique([element_code], name: "unique_element_code")
+  @@index([element_type], name: "index_element_type")
+  @@index([team_id], name: "index_team_id")
+  @@map("player")
+}
+
+model PlayerStats {
   id                                   String    @id @default(auto()) @map("_id") @db.ObjectId
-  element_id                           Int       @unique
+  event                                Event     @relation(fields: [event_id], references: [event_id])
+  event_id                             Int
+  element                              Player    @relation(fields: [element_id], references: [element_id])
+  element_id                           Int
   can_transact                         Boolean?
   chance_of_playing_next_round         Int?
   chance_of_playing_this_round         Int?
-  code                                 Int
   cost_change_event                    Int?
   cost_change_event_fall               Int?
   cost_change_start                    Int?
   cost_change_start_fall               Int?
   dreamteam_count                      Int?
-  element_type                         Int       @default(0)
+  element_type                         Int
   ep_next                              String?
   ep_this                              String?
   event_points                         Int?
-  first_name                           String?
   form                                 String?
   in_dreamteam                         Boolean?
   news                                 String?
@@ -98,14 +136,12 @@ model Player {
   now_cost                             Int?
   photo                                String?
   points_per_game                      String?
-  second_name                          String?
   selected_by_percent                  Int?
   special                              Boolean?
   squad_number                         Int?
   status                               String?
   team                                 Team      @relation(fields: [team_id], references: [team_id])
   team_id                              Int
-  team_code                            Int
   total_points                         Int?
   transfers_in                         Int?
   transfers_in_event                   Int?
@@ -113,7 +149,6 @@ model Player {
   transfers_out_event                  Int?
   value_form                           String?
   value_season                         String?
-  web_name                             String    @default("")
   minutes                              Int?
   goals_scored                         Int?
   assists                              Int?
@@ -169,7 +204,174 @@ model Player {
   created_at                           DateTime  @default(now())
   update_at                            DateTime  @updatedAt
 
-  @@index([element_type], name: "element_type_1")
-  @@index([team_id], name: "team_id_1")
-  @@map("player")
+  @@unique([element_id, event_id], name: "unique_element_id_event_id")
+  @@index([element_type], name: "index_element_type")
+  @@index([team_id], name: "index_team_id")
+  @@map("player_stats")
+}
+
+enum PlayerValueChangeType {
+  Start
+  Rise
+  Fall
+}
+
+model PlayerValue {
+  id           String                @id @default(auto()) @map("_id") @db.ObjectId
+  element      Player                @relation(fields: [element_id], references: [element_id])
+  element_id   Int
+  element_type Int
+  event        Event                 @relation(fields: [event_id], references: [event_id])
+  event_id     Int
+  value        Int
+  last_value   Int?
+  change_date  String?
+  change_type  PlayerValueChangeType @default(Start)
+  created_at   DateTime              @default(now())
+  updated_at   DateTime              @updatedAt
+
+  @@unique([element_id, change_date], name: "unique_element_id_change_date")
+  @@index([element_type], name: "index_element_type")
+  @@map("player_value")
+}
+
+model EventFixture {
+  id                     String   @id @default(auto()) @map("_id") @db.ObjectId
+  fixture_id             Int
+  fixture_code           Int
+  event                  Event    @relation(fields: [event_id], references: [event_id])
+  event_id               Int
+  finished               Boolean?
+  finished_provisional   Boolean?
+  kickoff_time           String
+  minutes                Int?
+  provisional_start_time Boolean?
+  started                Boolean?
+  teamA                  Team     @relation("TeamA", fields: [team_a], references: [team_id])
+  team_a                 Int
+  team_a_score           Int?
+  teamH                  Team     @relation("TeamH", fields: [team_h], references: [team_id])
+  team_h                 Int
+  team_h_score           Int?
+  stats                  Json?
+  team_a_difficulty      Int?
+  team_h_difficulty      Int?
+  pulse_id               Int?
+  created_at             DateTime @default(now())
+
+  eventLiveExplain EventLiveExplain[]
+
+  @@unique([fixture_id], name: "unique_fixture_id")
+  @@unique([fixture_code], name: "unique_fixture_code")
+  @@index([event_id], name: "index_event_id")
+  @@map("event_fixture")
+}
+
+model EventLive {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  event            Event    @relation(fields: [event_id], references: [event_id])
+  event_id         Int      @unique
+  element          Player   @relation(fields: [element_id], references: [element_id])
+  element_id       Int      @unique
+  minutes          Int?
+  goals_scored     Int?
+  assists          Int?
+  clean_sheets     Int?
+  goals_conceded   Int?
+  own_goals        Int?
+  penalties_saved  Int?
+  penalties_missed Int?
+  yellow_cards     Int?
+  red_cards        Int?
+  saves            Int?
+  bonus            Int?
+  bps              Int?
+  influence        Float?
+  creativity       Float?
+  threat           Float?
+  ict_index        String?
+  total_points     Int?
+  in_dreamteam     Boolean?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@unique([event_id, element_id], name: "unique_event_id_element_id")
+  @@map("event_live")
+}
+
+model EventLiveExplain {
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  fixture    EventFixture @relation(fields: [fixture_id], references: [fixture_id])
+  fixture_id Int
+  stats      Json?
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+
+  @@map("event_live_explain")
+}
+
+model Entry {
+  id                            String   @id @default(auto()) @map("_id") @db.ObjectId
+  entry_id                      Int
+  joined_time                   String?
+  started_event                 Int?
+  favourite_team                Int?
+  player_first_name             String?
+  player_last_name              String?
+  player_region_id              Int?
+  player_region_name            String?
+  player_region_iso_code_short  String?
+  player_region_iso_code_long   String?
+  years_active                  Int?
+  summary_overall_points        Int?
+  summary_overall_rank          Int?
+  summary_event_points          Int?
+  summary_event_rank            Int?
+  current_event                 Int?
+  leagues                       Json?
+  name                          String
+  name_change_blocked           Boolean?
+  entered_events                Int[]
+  kit                           String?
+  last_deadline_bank            Int?
+  last_deadline_value           Int?
+  last_deadline_total_transfers Int?
+  created_at                    DateTime @default(now())
+  updated_at                    DateTime @updatedAt
+
+  entryEventPicks     EntryEventPicks[]
+  entryEventTransfers EntryEventTransfers[]
+
+  @@unique([entry_id], name: "unique_entry_id")
+  @@index([name], name: "index_name")
+  @@map("entry")
+}
+
+model EntryEventPicks {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  entry          Entry    @relation(fields: [entry_id], references: [entry_id])
+  entry_id       Int
+  event          Event    @relation(fields: [event_id], references: [event_id])
+  event_id       Int
+  active_chip    String?
+  automatic_subs Json?
+  entry_history  Json?
+  picks          Json?
+  created_at     DateTime @default(now())
+
+  @@unique([entry_id, event_id], name: "unique_entry_id_event_id")
+  @@map("entry_event_picks")
+}
+
+model EntryEventTransfers {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  entry      Entry    @relation(fields: [entry_id], references: [entry_id])
+  entry_id   Int
+  event      Event    @relation(fields: [event_id], references: [event_id])
+  event_id   Int
+  transfers  Json?
+  created_at DateTime @default(now())
+
+  @@unique([entry_id, event_id], name: "unique_entry_id_event_id")
+  @@map("entry_event_transfers")
 }
