@@ -15,7 +15,7 @@ datasource db {
 
 model Event {
   id                        String    @id @default(auto()) @map("_id") @db.ObjectId
-  event_id                  Int
+  event_id                  Int       @unique
   name                      String
   deadline_time             DateTime
   release_time              DateTime?
@@ -45,32 +45,30 @@ model Event {
   most_vice_captained       Int?
   created_at                DateTime  @default(now())
 
-  playerStats         PlayerStats[]
-  playerValue         PlayerValue[]
-  event_fixtures      EventFixture[]
-  eventLive           EventLive?
-  entryEventPicks     EntryEventPicks[]
-  entryEventTransfers EntryEventTransfers[]
+  playerStat         PlayerStat[]
+  playerValue        PlayerValue[]
+  event_fixtures     EventFixture[]
+  eventLive          EventLive?
+  entryEventPick     EntryEventPick[]
+  entryEventTransfer EntryEventTransfer[]
 
-  @@unique([event_id], name: "unique_event_id")
   @@map("event")
 }
 
 model Phase {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  phase_id    Int
+  phase_id    Int      @unique
   name        String?
   start_event Int?
   stop_event  Int?
   created_at  DateTime @default(now())
 
-  @@unique([phase_id], name: "unique_phase_id")
   @@map("phase")
 }
 
 model Team {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  team_id    Int
+  team_id    Int      @unique
   team_code  Int
   name       String?
   short_name String?
@@ -79,16 +77,14 @@ model Team {
   eventFixtureTeamA EventFixture[] @relation("TeamA")
   eventFixtureTeamH EventFixture[] @relation("TeamH")
   player            Player[]
-  playerStats       PlayerStats[]
+  playerStat        PlayerStat[]
 
-  @@unique([team_id], name: "unique_team_id")
-  @@unique([team_code], name: "unique_team_code")
   @@map("team")
 }
 
 model Player {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  element_id   Int
+  element_id   Int      @unique
   element_code Int
   price        Int?
   start_price  Int?
@@ -101,17 +97,13 @@ model Player {
   created_at   DateTime @default(now())
 
   eventLive   EventLive[]
-  playerStats PlayerStats[]
+  playerStat  PlayerStat[]
   playerValue PlayerValue[]
 
-  @@unique([element_id], name: "unique_element_id")
-  @@unique([element_code], name: "unique_element_code")
-  @@index([element_type], name: "index_element_type")
-  @@index([team_id], name: "index_team_id")
   @@map("player")
 }
 
-model PlayerStats {
+model PlayerStat {
   id                                   String    @id @default(auto()) @map("_id") @db.ObjectId
   event                                Event     @relation(fields: [event_id], references: [event_id])
   event_id                             Int
@@ -204,10 +196,7 @@ model PlayerStats {
   created_at                           DateTime  @default(now())
   update_at                            DateTime  @updatedAt
 
-  @@unique([element_id, event_id], name: "unique_element_id_event_id")
-  @@index([element_type], name: "index_element_type")
-  @@index([team_id], name: "index_team_id")
-  @@map("player_stats")
+  @@map("player_stat")
 }
 
 enum PlayerValueChangeType {
@@ -230,8 +219,8 @@ model PlayerValue {
   created_at   DateTime              @default(now())
   updated_at   DateTime              @updatedAt
 
-  @@unique([element_id, change_date], name: "unique_element_id_change_date")
-  @@index([element_type], name: "index_element_type")
+  // @@unique([element_id, change_date], name: "unique_element_id_change_date")
+  // @@index([element_type], name: "index_element_type")
   @@map("player_value")
 }
 
@@ -339,15 +328,15 @@ model Entry {
   created_at                    DateTime @default(now())
   updated_at                    DateTime @updatedAt
 
-  entryEventPicks     EntryEventPicks[]
-  entryEventTransfers EntryEventTransfers[]
+  entryEventPick     EntryEventPick[]
+  entryEventTransfer EntryEventTransfer[]
 
   @@unique([entry_id], name: "unique_entry_id")
   @@index([name], name: "index_name")
   @@map("entry")
 }
 
-model EntryEventPicks {
+model EntryEventPick {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   entry          Entry    @relation(fields: [entry_id], references: [entry_id])
   entry_id       Int
@@ -360,10 +349,10 @@ model EntryEventPicks {
   created_at     DateTime @default(now())
 
   @@unique([entry_id, event_id], name: "unique_entry_id_event_id")
-  @@map("entry_event_picks")
+  @@map("entry_event_pick")
 }
 
-model EntryEventTransfers {
+model EntryEventTransfer {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   entry      Entry    @relation(fields: [entry_id], references: [entry_id])
   entry_id   Int
@@ -373,5 +362,5 @@ model EntryEventTransfers {
   created_at DateTime @default(now())
 
   @@unique([entry_id, event_id], name: "unique_entry_id_event_id")
-  @@map("entry_event_transfers")
+  @@map("entry_event_transfer")
 }

@@ -40,4 +40,4 @@ const server = app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
 });
 
-module.exports = { prisma, server };
+module.exports = { server, prisma, logger };
